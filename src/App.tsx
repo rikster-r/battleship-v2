@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { createField, createShips } from './utils/initial';
-import Setup from './components/Setup';
+import { useState } from "react";
+import { createField, createShips } from "./utils/initial";
+import Setup from "./components/Setup";
 
 function App() {
   const [playerField, setPlayerField] = useState(createField());
@@ -15,12 +15,12 @@ function App() {
   const [isMoveBlocked, setIsMoveBlocked] = useState(false);
 
   const [gameStatus, setGameStatus] = useState<
-    'setup' | 'inProgress' | 'playerWon' | 'computerWon'
-  >('setup');
+    "setup" | "inProgress" | "playerWon" | "computerWon"
+  >("setup");
 
-  if (gameStatus === 'setup')
+  if (gameStatus === "setup")
     return (
-      <div className="bg-[url('/worldMap.jpg')] min-h-[100dvh] bg-cover flex justify-center items-center">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-[url('/worldMap.jpg')] bg-cover p-3">
         <Setup playerShips={playerShips} playerField={playerField} />
       </div>
     );
