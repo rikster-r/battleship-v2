@@ -1,9 +1,7 @@
 export const createField = (): Field => {
-  return Array(10).fill(
-    Array(10).fill({
-      isHit: false,
-    })
-  );
+  return Array(100).fill({
+    isHit: false,
+  });
 };
 
 export const createShips = (): Ships => {

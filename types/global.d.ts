@@ -3,7 +3,7 @@ type Cell = {
   isHit: boolean;
 };
 
-type Field = Cell[][];
+type Field = Cell[];
 
 type Ship = {
   positions: number[][];
