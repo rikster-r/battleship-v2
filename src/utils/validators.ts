@@ -1,5 +1,6 @@
 // used for drag and drop
 export const isPositionValid = (
+  field: Field,
   startPosition: number,
   shipLength: number,
   axis: string
@@ -17,6 +18,16 @@ export const isPositionValid = (
   // Check if the ship would go out of bounds vertically
   if (axis === "y" && startPosition + (shipLength - 1) * 10 > 99) {
     return false;
+  }
+
+  // Check if the cells are occupied by a ship
+  for (let i = 0; i < shipLength; i++) {
+    if (
+      (axis === "x" && field[startPosition + i].shipId) ||
+      (axis === "y" && field[startPosition + i * 10].shipId)
+    ) {
+      return false;
+    }
   }
 
   // Otherwise, the position is valid

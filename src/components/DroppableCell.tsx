@@ -1,45 +1,45 @@
-import { type ReactNode } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { isPositionValid } from "../utils/validators";
 
 type Props = {
-  children?: ReactNode | ReactNode[];
-  id: number;
-  currentShipId?: number;
-  currentCellId?: number;
+  field: Field;
+  cellId: number;
+  data: Cell;
+  draggedShipId?: number;
+  hoveredCellId?: number;
   axis: string;
   ships: Ships;
 };
 
 const DroppableCell = ({
-  children,
-  id,
-  currentCellId,
-  currentShipId,
+  field,
+  cellId,
+  draggedShipId,
+  hoveredCellId,
   axis,
   ships,
 }: Props) => {
-  const { setNodeRef } = useDroppable({ id });
+  const { setNodeRef } = useDroppable({ id: cellId });
 
   const getCellStatus = () => {
     // speficially checks for undefined because id can be 0
-    if (currentCellId === undefined || !currentShipId) return;
+    if (hoveredCellId === undefined || !draggedShipId) return;
 
-    const shipLength = ships[currentShipId].length;
+    const shipLength = ships[draggedShipId].length;
 
     let isPartOfShip = false;
 
     for (let i = 0; i < shipLength; i++) {
       if (
-        (axis === "x" && id === currentCellId + i) ||
-        (axis === "y" && id === currentCellId + i * 10)
+        (axis === "x" && cellId === hoveredCellId + i) ||
+        (axis === "y" && cellId === hoveredCellId + i * 10)
       ) {
         isPartOfShip = true;
         break;
       }
     }
 
-    if (isPartOfShip && isPositionValid(currentCellId, shipLength, axis))
+    if (isPartOfShip && isPositionValid(field, hoveredCellId, shipLength, axis))
       return "valid";
 
     if (isPartOfShip) return "error";
@@ -52,11 +52,9 @@ const DroppableCell = ({
       className={`${status === "valid" ? "bg-cyan-800" : ""}
       ${
         status === "error" ? "bg-red-800" : ""
-      } flex aspect-square items-center justify-center border border-neutral-400`}
+      } relative flex aspect-square items-center justify-center border border-neutral-400`}
       ref={setNodeRef}
-    >
-      {children}
-    </div>
+    ></div>
   );
 };
 

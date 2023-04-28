@@ -10,7 +10,6 @@ export const createShips = (): Ships => {
       positions: [],
       length: 4,
       isDestroyed: false,
-      // TODO
       image: "carrier.png",
       name: "Carrier",
     },

@@ -1,35 +1,115 @@
 import { useState } from "react";
-import {
-  DndContext,
-  type DragEndEvent,
-  type DragOverEvent,
-} from "@dnd-kit/core";
+import { DndContext, type DragOverEvent } from "@dnd-kit/core";
 import DraggableShip from "./DraggableShip";
 import DroppableCell from "./DroppableCell";
+import FieldShip from "./FieldShip";
+import { isPositionValid } from "../utils/validators";
+import { AnimatePresence } from "framer-motion";
+import { createField } from "../utils/initial";
 
 type Props = {
   playerShips: Ships;
+  setPlayerField: React.Dispatch<React.SetStateAction<Field>>;
   playerField: Field;
+  setPlayerShips: React.Dispatch<React.SetStateAction<Ships>>;
 };
 
-const Setup = ({ playerShips, playerField }: Props) => {
+const Setup = ({
+  playerShips,
+  setPlayerShips,
+  playerField,
+  setPlayerField,
+}: Props) => {
   const [axis, setAxis] = useState<"x" | "y">("x");
   // all cells are droppables and all the ships are draggables
-  const [currentCellId, setCurrentCellId] = useState<number>();
-  const [currentShipId, setCurrentShipId] = useState<number>();
+  const [hoveredCellId, setHoveredCellId] = useState<number>();
+  const [draggedShipId, setDraggedShipId] = useState<number>();
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    //console.log(event);
+  const handleDragEnd = () => {
+    if (hoveredCellId === undefined || !draggedShipId) return;
+
+    const shipLength = playerShips[draggedShipId].length;
+    if (isPositionValid(playerField, hoveredCellId, shipLength, axis)) {
+      //get dropped ships positions
+      let positions: number[] = [];
+
+      for (let i = 0; i < shipLength; i++) {
+        if (axis === "x") {
+          positions.push(hoveredCellId + i);
+        } else {
+          positions.push(hoveredCellId + i * 10);
+        }
+      }
+
+      // set dropped ships new positions
+      setPlayerShips((ships) => ({
+        ...ships,
+        [draggedShipId]: {
+          ...ships[draggedShipId],
+          positions,
+          axis,
+        },
+      }));
+
+      // set ids in cells
+      const fieldClone = JSON.parse(JSON.stringify(playerField));
+
+      positions.forEach(
+        (id) =>
+          (fieldClone[id] = {
+            ...fieldClone[id],
+            shipId: draggedShipId,
+          })
+      );
+
+      setPlayerField(fieldClone);
+    }
+
+    setHoveredCellId(undefined);
+    setDraggedShipId(undefined);
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    setCurrentCellId(event.collisions?.at(0)?.id as number);
-    setCurrentShipId(event.active.id as number);
+    setHoveredCellId(event.collisions?.at(0)?.id as number);
+    setDraggedShipId(event.active.id as number);
   };
 
   const handleDragCancel = () => {
-    setCurrentCellId(undefined);
-    setCurrentShipId(undefined);
+    setHoveredCellId(undefined);
+    setDraggedShipId(undefined);
+  };
+
+  const resetShipPosition = (id: number) => {
+    setPlayerShips((ships) => ({
+      ...ships,
+      [id]: {
+        ...ships[id],
+        positions: [],
+      },
+    }));
+  };
+
+  const resetCell = (id: number) => {
+    setPlayerField(
+      playerField.map((cell) => {
+        return cell.shipId === id
+          ? {
+              ...cell,
+              shipId: undefined,
+            }
+          : cell;
+      })
+    );
+  };
+
+  const resetShipPlacement = (id: number) => {
+    resetShipPosition(id);
+    resetCell(id);
+  };
+
+  const resetAll = () => {
+    Object.keys(playerShips).forEach((id) => resetShipPosition(Number(id)));
+    setPlayerField(createField());
   };
 
   return (
@@ -105,41 +185,44 @@ const Setup = ({ playerShips, playerField }: Props) => {
                 </div>
               </div>
 
-              <div className="field grid aspect-square grid-cols-[repeat(10,minmax(0,56px))] border border-neutral-400">
-                {playerField.map((cell, id) => (
+              <div className="relative grid aspect-square grid-cols-[repeat(10,minmax(0,56px))] border border-neutral-400">
+                {playerField.map((data, id) => (
                   <DroppableCell
+                    field={playerField}
+                    data={data}
                     key={id}
-                    id={id}
-                    currentCellId={currentCellId}
-                    currentShipId={currentShipId}
+                    cellId={id}
+                    hoveredCellId={hoveredCellId}
+                    draggedShipId={draggedShipId}
                     axis={axis}
                     ships={playerShips}
                   />
+                ))}
+                {Object.entries(playerShips).map(([id, ship]) => (
+                  <FieldShip key={id} ship={ship} />
                 ))}
               </div>
             </div>
           </div>
           <div className="flex flex-wrap justify-center gap-1 lg:grid lg:grid-cols-2">
-            {Object.entries(playerShips).map(([id, ship]) => (
-              // 1 - 10
-              <DraggableShip key={id} id={Number(id)}>
-                <img
-                  src={`/${ship.image}`}
-                  alt={ship.name}
-                  className="w-16 select-none sm:w-24"
-                  draggable="false"
+            <AnimatePresence initial={false}>
+              {Object.entries(playerShips).map(([id, ship]) => (
+                // 1 - 10
+                <DraggableShip
+                  key={id}
+                  id={Number(id)}
+                  ships={playerShips}
+                  ship={ship}
+                  resetShipPlacement={resetShipPlacement}
                 />
-                <p className="text-xs capitalize text-neutral-300 sm:text-base">
-                  {ship.name} ({ship.length})
-                </p>
-              </DraggableShip>
-            ))}
+              ))}
+            </AnimatePresence>
           </div>
         </div>
         <div className="flex w-full justify-center gap-4 rounded-md bg-neutral-900 bg-opacity-90 py-5 text-neutral-100">
           <button
             className="inline-block rounded-md border border-neutral-100 px-6 py-2.5 text-xs font-medium transition hover:scale-105 active:bg-neutral-100 active:text-neutral-900 sm:px-12 sm:text-base"
-            // todo
+            onClick={resetAll}
           >
             Reset
           </button>

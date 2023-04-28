@@ -21,7 +21,12 @@ function App() {
   if (gameStatus === "setup")
     return (
       <div className="flex min-h-[100dvh] items-center justify-center bg-[url('/worldMap.jpg')] bg-cover p-3">
-        <Setup playerShips={playerShips} playerField={playerField} />
+        <Setup
+          playerShips={playerShips}
+          setPlayerShips={setPlayerShips}
+          playerField={playerField}
+          setPlayerField={setPlayerField}
+        />
       </div>
     );
 

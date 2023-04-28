@@ -6,11 +6,12 @@ type Cell = {
 type Field = Cell[];
 
 type Ship = {
-  positions: number[][];
+  positions: number[];
   length: number;
   isDestroyed: boolean;
   image: string;
   name: string;
+  axis?: "x" | "y";
 };
 
 type Ships = Record<number, Ship>;
