@@ -50,7 +50,7 @@ const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div
-        className="z-10 flex w-24 flex-col items-center justify-center rounded-xl border border-cyan-400 py-1 pb-3 opacity-100 sm:w-32 lg:aspect-square"
+        className="z-10 flex w-24 flex-col items-center justify-center gap-3 rounded-xl border border-cyan-400 py-1 pt-3 opacity-100 sm:w-32 lg:aspect-square"
         style={style}
         ref={setNodeRef}
         {...listeners}

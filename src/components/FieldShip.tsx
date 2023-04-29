@@ -19,7 +19,7 @@ const FieldShip = ({ ship }: Props) => {
 
   return (
     <div
-      className="absolute flex origin-top-left select-none items-center justify-center pb-1"
+      className="absolute flex origin-top-left select-none items-center justify-center"
       style={{
         width,
         height,
@@ -29,14 +29,14 @@ const FieldShip = ({ ship }: Props) => {
       }}
     >
       <motion.div
-        className="flex w-full items-center justify-center"
+        className="flex h-full w-full items-center justify-center"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
       >
         <img
           src={`/${ship.image}`}
           alt={ship.name}
-          className="h-full w-[90%]"
+          className={`${ship.length === 1 ? "h-[50%]" : "h-[80%]"} w-[90%]`}
         />
       </motion.div>
     </div>
