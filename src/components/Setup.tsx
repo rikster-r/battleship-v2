@@ -7,13 +7,18 @@ import {
   useSensors,
   type DragOverEvent,
 } from "@dnd-kit/core";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { AnimatePresence } from "framer-motion";
+import { isPositionValid } from "../utils/validators";
+import {
+  createField,
+  createShips,
+  createShipPositions,
+} from "../utils/creators";
+import { getRandomNumber, getRandomAxis } from "../utils/random";
 import DraggableShip from "./DraggableShip";
 import DroppableCell from "./DroppableCell";
 import FieldShip from "./FieldShip";
-import { isPositionValid } from "../utils/validators";
-import { AnimatePresence } from "framer-motion";
-import { createField } from "../utils/initial";
-import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 type Props = {
   playerShips: Ships;
@@ -38,17 +43,10 @@ const Setup = ({
     if (hoveredCellId === undefined || !draggedShipId) return;
 
     const shipLength = playerShips[draggedShipId].length;
+
     if (isPositionValid(playerField, hoveredCellId, shipLength, axis)) {
       //get dropped ships positions
-      let positions: number[] = [];
-
-      for (let i = 0; i < shipLength; i++) {
-        if (axis === "x") {
-          positions.push(hoveredCellId + i);
-        } else {
-          positions.push(hoveredCellId + i * 10);
-        }
-      }
+      const positions = createShipPositions(hoveredCellId, shipLength, axis);
 
       // set dropped ships new positions
       setPlayerShips((ships) => ({
@@ -121,7 +119,41 @@ const Setup = ({
     setPlayerField(createField());
   };
 
-  const placeShipsRandomly = () => {};
+  const placeShipsRandomly = () => {
+    resetAll();
+
+    const newShips = createShips();
+    const newField = createField();
+
+    for (let i = 1; i < 11; i++) {
+      let newPosition: number;
+      let newAxis: "x" | "y";
+
+      do {
+        newPosition = getRandomNumber(0, 99);
+        newAxis = getRandomAxis();
+      } while (
+        !isPositionValid(newField, newPosition, newShips[i].length, newAxis)
+      );
+
+      newShips[i].positions = createShipPositions(
+        newPosition,
+        newShips[i].length,
+        newAxis
+      );
+      newShips[i].axis = newAxis;
+      newShips[i].positions.forEach(
+        (id) =>
+          (newField[id] = {
+            ...newField.at(id),
+            shipId: i,
+          } as Cell)
+      );
+    }
+
+    setPlayerShips(newShips);
+    setPlayerField(newField);
+  };
 
   return (
     <DndContext
@@ -241,7 +273,7 @@ const Setup = ({
           </button>
           <button
             className="inline-block rounded-md border border-neutral-100 px-6 py-2.5 text-xs font-medium transition hover:scale-105 active:bg-neutral-100 active:text-neutral-900 sm:px-12 sm:text-base"
-            // todo
+            onClick={placeShipsRandomly}
           >
             Random
           </button>

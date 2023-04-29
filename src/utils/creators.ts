@@ -78,3 +78,21 @@ export const createShips = (): Ships => {
     },
   };
 };
+
+export const createShipPositions = (
+  start: number,
+  length: number,
+  axis: string
+) => {
+  let positions: number[] = [];
+
+  for (let i = 0; i < length; i++) {
+    if (axis === "x") {
+      positions.push(start + i);
+    } else {
+      positions.push(start + i * 10);
+    }
+  }
+
+  return positions;
+};

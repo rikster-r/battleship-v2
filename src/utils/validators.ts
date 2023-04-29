@@ -1,4 +1,3 @@
-// used for drag and drop
 export const isPositionValid = (
   field: Field,
   startPosition: number,
