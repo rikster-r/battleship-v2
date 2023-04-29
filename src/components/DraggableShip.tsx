@@ -15,13 +15,15 @@ const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
   const style = transform
     ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        touchAction: "none",
       }
     : undefined;
 
   if (ships[id].positions.length !== 0)
     return (
       <motion.button
-        className="hover: hover: group z-10 flex w-24 flex-col items-center justify-center gap-2 rounded-xl  border-neutral-700 py-1 pt-2 opacity-100 hover:text-red-500 sm:w-32 lg:aspect-square"
+        key="trash"
+        className="hover: hover: group z-10 flex w-24 flex-col items-center justify-center gap-1 rounded-xl border-neutral-700 py-2 opacity-100 hover:text-red-500 sm:w-32 sm:gap-2 sm:pb-2 sm:pt-3 lg:aspect-square"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         onClick={() => resetShipPlacement(id)}
@@ -32,7 +34,7 @@ const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="h-10 w-10"
+          className="h-7 w-7 sm:h-10 sm:w-10"
         >
           <path
             strokeLinecap="round"
@@ -48,9 +50,9 @@ const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
     );
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+    <motion.button key="ship" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div
-        className="z-10 flex w-24 flex-col items-center justify-center gap-3 rounded-xl border border-cyan-400 py-1 pt-3 opacity-100 sm:w-32 lg:aspect-square"
+        className="z-10 flex w-24 flex-col items-center justify-center gap-3 rounded-xl border border-cyan-400 py-3 opacity-100 sm:w-32 sm:pb-1 sm:pt-3 lg:aspect-square"
         style={style}
         ref={setNodeRef}
         {...listeners}
@@ -66,7 +68,7 @@ const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
           {ship.name} ({ship.length})
         </p>
       </div>
-    </motion.div>
+    </motion.button>
   );
 };
 

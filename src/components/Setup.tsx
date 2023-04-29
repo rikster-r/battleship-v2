@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { DndContext, type DragOverEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragOverEvent,
+} from "@dnd-kit/core";
 import DraggableShip from "./DraggableShip";
 import DroppableCell from "./DroppableCell";
 import FieldShip from "./FieldShip";
 import { isPositionValid } from "../utils/validators";
 import { AnimatePresence } from "framer-motion";
 import { createField } from "../utils/initial";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 type Props = {
   playerShips: Ships;
@@ -24,6 +32,7 @@ const Setup = ({
   // all cells are droppables and all the ships are draggables
   const [hoveredCellId, setHoveredCellId] = useState<number>();
   const [draggedShipId, setDraggedShipId] = useState<number>();
+  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   const handleDragEnd = () => {
     if (hoveredCellId === undefined || !draggedShipId) return;
@@ -112,11 +121,15 @@ const Setup = ({
     setPlayerField(createField());
   };
 
+  const placeShipsRandomly = () => {};
+
   return (
     <DndContext
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
       onDragCancel={handleDragCancel}
+      modifiers={[restrictToWindowEdges]}
+      sensors={sensors}
     >
       <div className="flex flex-col gap-3">
         <div className="flex w-full max-w-max flex-col justify-center gap-8 rounded-md bg-neutral-900 bg-opacity-90 p-4 text-neutral-100 md:p-7 lg:flex-row">

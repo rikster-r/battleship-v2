@@ -36,7 +36,7 @@ const FieldShip = ({ ship }: Props) => {
         <img
           src={`/${ship.image}`}
           alt={ship.name}
-          className={`${ship.length === 1 ? "h-[50%]" : "h-[80%]"} w-[90%]`}
+          className={`${ship.length === 1 ? "h-[40%]" : "h-[80%]"} w-[80%]`}
         />
       </motion.div>
     </div>
