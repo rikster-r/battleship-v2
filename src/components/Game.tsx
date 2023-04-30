@@ -28,8 +28,64 @@ const Game = ({
 }: Props) => {
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
 
-  // true when animations plays or when computer is taking its turn
-  const [isMoveBlocked, setIsMoveBlocked] = useState(false);
+  const attackPlayer = (player: string, position: number) => {
+    // hit cell
+    const fieldCopy = JSON.parse(
+      JSON.stringify(player === "computer" ? computerField : playerField)
+    );
+    const cell = fieldCopy[position];
+    cell.isHit = true;
+
+    // update field
+    if (player === "computer") {
+      setComputerField(fieldCopy);
+    } else {
+      setPlayerField(fieldCopy);
+    }
+
+    // logic after the hit
+    if (cell.shipId) {
+      checkIfShipDestroyed(fieldCopy, player, cell.shipId);
+
+      if (!isPlayerTurn) makeComputerMove();
+    } else {
+      // if attacked person, it is person's turn
+      // if attacked computer, it is computer's turn
+      setIsPlayerTurn(player === "person");
+    }
+  };
+
+  const checkIfShipDestroyed = (
+    field: Field,
+    player: string,
+    shipId: number
+  ) => {
+    const ship =
+      player === "computer" ? computerShips[shipId] : playerShips[shipId];
+
+    if (ship.positions.every((id) => field[id].isHit === true)) {
+      const setShips =
+        player === "computer" ? setComputerShips : setPlayerShips;
+
+      setShips((ships) => ({
+        ...ships,
+        [shipId]: {
+          ...ships[shipId],
+          isDestroyed: true,
+        },
+      }));
+
+      checkVictoryStatus();
+    }
+  };
+
+  const makeComputerMove = () => {
+    // todo
+  };
+
+  const checkVictoryStatus = () => {
+    // todo
+  };
 
   return (
     <>
@@ -37,13 +93,23 @@ const Game = ({
         <h2 className="text-right font-bold uppercase text-cyan-300 sm:text-2xl">
           Friendly waters
         </h2>
-        <Field player="person" field={playerField} ships={playerShips} />
+        <Field
+          player="person"
+          field={playerField}
+          ships={playerShips}
+          attackPlayer={attackPlayer}
+        />
       </div>
       <div className="flex flex-col gap-3 sm:gap-6">
         <h2 className="text-right font-bold uppercase text-orange-400 sm:text-2xl">
           Enemy waters
         </h2>
-        <Field player="computer" field={computerField} ships={computerShips} />
+        <Field
+          player="computer"
+          field={computerField}
+          ships={computerShips}
+          attackPlayer={attackPlayer}
+        />
       </div>
     </>
   );

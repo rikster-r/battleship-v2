@@ -6,9 +6,10 @@ type Props = {
   player: string;
   field: Field;
   ships: Ships;
+  attackPlayer: (player: string, position: number) => void;
 };
 
-const Field = ({ player, field, ships }: Props) => {
+const Field = ({ player, field, ships, attackPlayer }: Props) => {
   return (
     <FieldWrapper>
       <div className="relative grid aspect-square grid-cols-[repeat(10,minmax(0,56px))] border border-neutral-400">
@@ -17,8 +18,8 @@ const Field = ({ player, field, ships }: Props) => {
             key={id}
             cellId={id}
             data={data}
-            ships={ships}
             player={player}
+            attackPlayer={attackPlayer}
           />
         ))}
         {Object.entries(ships).map(([id, ship]) => {

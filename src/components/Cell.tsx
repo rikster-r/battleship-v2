@@ -1,11 +1,17 @@
 type Props = {
   cellId: number;
   data: Cell;
-  ships: Ships;
   player: string;
+  attackPlayer: (player: string, position: number) => void;
 };
 
-const Cell = ({ cellId, data, ships, player }: Props) => {
+const Cell = ({ cellId, data, player, attackPlayer }: Props) => {
+  const handleClick = () => {
+    if (player === "person" || data.isHit) return;
+
+    attackPlayer("computer", cellId);
+  };
+
   return (
     <div
       className={`${
@@ -13,7 +19,16 @@ const Cell = ({ cellId, data, ships, player }: Props) => {
           ? ""
           : "hover:cursor-crosshair hover:bg-neutral-300 hover:bg-opacity-30"
       } relative flex aspect-square items-center justify-center border border-neutral-400`}
-    ></div>
+      onClick={handleClick}
+    >
+      {data.isHit && (
+        <div
+          className={`${
+            data.shipId ? "bg-red-500" : "bg-white"
+          }  z-10 h-1/3 w-1/3 rounded-full`}
+        ></div>
+      )}
+    </div>
   );
 };
 

@@ -68,7 +68,7 @@ const Setup = ({
       }));
 
       // set ids in cells
-      const fieldClone = playerField.slice(0);
+      const fieldClone = JSON.parse(JSON.stringify(playerField));
 
       positions.forEach(
         (id) =>
