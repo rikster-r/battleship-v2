@@ -19,7 +19,7 @@ const FieldShip = ({ ship }: Props) => {
 
   return (
     <div
-      className="absolute flex origin-top-left select-none items-center justify-center"
+      className="absolute flex origin-top-left animate-pulse select-none items-center justify-center"
       style={{
         width,
         height,
@@ -37,6 +37,7 @@ const FieldShip = ({ ship }: Props) => {
           src={`/${ship.image}`}
           alt={ship.name}
           className={`${ship.length === 1 ? "h-[40%]" : "h-[80%]"} w-[80%]`}
+          draggable="false"
         />
       </motion.div>
     </div>

@@ -19,12 +19,18 @@ import { getRandomNumber, getRandomAxis } from "../utils/random";
 import DraggableShip from "./DraggableShip";
 import DroppableCell from "./DroppableCell";
 import FieldShip from "./FieldShip";
+import FieldWrapper from "./FieldWrapper";
 
 type Props = {
   playerShips: Ships;
   setPlayerField: React.Dispatch<React.SetStateAction<Field>>;
   playerField: Field;
   setPlayerShips: React.Dispatch<React.SetStateAction<Ships>>;
+  setComputerField: React.Dispatch<React.SetStateAction<Field>>;
+  setComputerShips: React.Dispatch<React.SetStateAction<Ships>>;
+  setGameStatus: React.Dispatch<
+    React.SetStateAction<"setup" | "inProgress" | "playerWon" | "computerWon">
+  >;
 };
 
 const Setup = ({
@@ -32,6 +38,9 @@ const Setup = ({
   setPlayerShips,
   playerField,
   setPlayerField,
+  setComputerField,
+  setComputerShips,
+  setGameStatus,
 }: Props) => {
   const [axis, setAxis] = useState<"x" | "y">("x");
   // all cells are droppables and all the ships are draggables
@@ -59,7 +68,7 @@ const Setup = ({
       }));
 
       // set ids in cells
-      const fieldClone = JSON.parse(JSON.stringify(playerField));
+      const fieldClone = playerField.slice(0);
 
       positions.forEach(
         (id) =>
@@ -72,8 +81,7 @@ const Setup = ({
       setPlayerField(fieldClone);
     }
 
-    setHoveredCellId(undefined);
-    setDraggedShipId(undefined);
+    resetDnDState();
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -81,7 +89,7 @@ const Setup = ({
     setDraggedShipId(event.active.id as number);
   };
 
-  const handleDragCancel = () => {
+  const resetDnDState = () => {
     setHoveredCellId(undefined);
     setDraggedShipId(undefined);
   };
@@ -119,8 +127,8 @@ const Setup = ({
     setPlayerField(createField());
   };
 
-  const placeShipsRandomly = () => {
-    resetAll();
+  const placeShipsRandomly = (player: "computer" | "person") => {
+    if (player === "person") resetAll();
 
     const newShips = createShips();
     const newField = createField();
@@ -151,15 +159,29 @@ const Setup = ({
       );
     }
 
-    setPlayerShips(newShips);
-    setPlayerField(newField);
+    if (player === "computer") {
+      setComputerField(newField);
+      setComputerShips(newShips);
+    } else {
+      setPlayerShips(newShips);
+      setPlayerField(newField);
+    }
+  };
+
+  const handleSubmit = () => {
+    // check if every ship is placed
+    if (Object.values(playerShips).some((ship) => ship.positions.length === 0))
+      return;
+
+    placeShipsRandomly("computer");
+    setGameStatus("inProgress");
   };
 
   return (
     <DndContext
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
-      onDragCancel={handleDragCancel}
+      onDragCancel={resetDnDState}
       modifiers={[restrictToWindowEdges]}
       sensors={sensors}
     >
@@ -184,52 +206,7 @@ const Setup = ({
                 Y axis
               </button>
             </div>
-            <div className="grid aspect-square w-full max-w-max grid-cols-[16px_1fr] grid-rows-[16px_1fr] gap-2 md:gap-4">
-              <div className="col-start-2 grid grid-cols-[repeat(10,minmax(0,56px))]">
-                <div className="text-center text-xs sm:text-sm">A</div>
-                <div className="text-center text-xs sm:text-sm">B</div>
-                <div className="text-center text-xs sm:text-sm">C</div>
-                <div className="text-center text-xs sm:text-sm">D</div>
-                <div className="text-center text-xs sm:text-sm">E</div>
-                <div className="text-center text-xs sm:text-sm">F</div>
-                <div className="text-center text-xs sm:text-sm">G</div>
-                <div className="text-center text-xs sm:text-sm">H</div>
-                <div className="text-center text-xs sm:text-sm">I</div>
-                <div className="text-center text-xs sm:text-sm">J</div>
-              </div>
-              <div className="grid">
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  1
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  2
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  3
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  4
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  5
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  6
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  7
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  8
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  9
-                </div>
-                <div className="flex items-center justify-center text-xs sm:text-sm">
-                  10
-                </div>
-              </div>
-
+            <FieldWrapper>
               <div className="relative grid aspect-square grid-cols-[repeat(10,minmax(0,56px))] border border-neutral-400">
                 {playerField.map((data, id) => (
                   <DroppableCell
@@ -247,7 +224,7 @@ const Setup = ({
                   <FieldShip key={id} ship={ship} />
                 ))}
               </div>
-            </div>
+            </FieldWrapper>
           </div>
           <div className="flex flex-wrap justify-center gap-1 lg:grid lg:grid-cols-2">
             <AnimatePresence initial={false}>
@@ -273,7 +250,7 @@ const Setup = ({
           </button>
           <button
             className="inline-block rounded-md border border-neutral-100 px-6 py-2.5 text-xs font-medium transition hover:scale-105 active:bg-neutral-100 active:text-neutral-900 sm:px-12 sm:text-base"
-            onClick={placeShipsRandomly}
+            onClick={() => placeShipsRandomly("person")}
           >
             Random
           </button>
@@ -288,7 +265,7 @@ const Setup = ({
             disabled={Object.values(playerShips).some(
               (ship) => ship.positions.length === 0
             )}
-            // todo
+            onClick={handleSubmit}
           >
             Confirm
           </button>
