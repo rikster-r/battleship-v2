@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   MouseSensor,
@@ -47,6 +47,17 @@ const Setup = ({
   const [hoveredCellId, setHoveredCellId] = useState<number>();
   const [draggedShipId, setDraggedShipId] = useState<number>();
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
+
+  useEffect(() => {
+    const changeAxis = (e: MouseEvent) => {
+      e.preventDefault();
+      setAxis((prevAxis) => (prevAxis === "x" ? "y" : "x"));
+    };
+
+    document.addEventListener("contextmenu", changeAxis);
+
+    return () => document.removeEventListener("contextmenu", changeAxis);
+  }, []);
 
   const handleDragEnd = () => {
     if (hoveredCellId === undefined || !draggedShipId) return;

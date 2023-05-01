@@ -1,5 +1,5 @@
 import Field from "./Field";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Props = {
   playerField: Field;
@@ -28,16 +28,18 @@ const Game = ({
 }: Props) => {
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
 
-  const attackPlayer = (player: string, position: number) => {
+  const attackPlayer = (playerToAttack: string, position: number) => {
     // hit cell
     const fieldCopy = JSON.parse(
-      JSON.stringify(player === "computer" ? computerField : playerField)
+      JSON.stringify(
+        playerToAttack === "computer" ? computerField : playerField
+      )
     );
     const cell = fieldCopy[position];
     cell.isHit = true;
 
     // update field
-    if (player === "computer") {
+    if (playerToAttack === "computer") {
       setComputerField(fieldCopy);
     } else {
       setPlayerField(fieldCopy);
@@ -45,27 +47,30 @@ const Game = ({
 
     // logic after the hit
     if (cell.shipId) {
-      checkIfShipDestroyed(fieldCopy, player, cell.shipId);
+      checkIfShipDestroyed(fieldCopy, playerToAttack, cell.shipId);
 
+      // if computer has hit a ship, make another move
       if (!isPlayerTurn) makeComputerMove();
     } else {
       // if attacked person, it is person's turn
       // if attacked computer, it is computer's turn
-      setIsPlayerTurn(player === "person");
+      setIsPlayerTurn(playerToAttack === "person");
     }
   };
 
   const checkIfShipDestroyed = (
     field: Field,
-    player: string,
+    playerAttacked: string,
     shipId: number
   ) => {
     const ship =
-      player === "computer" ? computerShips[shipId] : playerShips[shipId];
+      playerAttacked === "computer"
+        ? computerShips[shipId]
+        : playerShips[shipId];
 
-    if (ship.positions.every((id) => field[id].isHit === true)) {
+    if (ship.positions.every((id) => field[id].isHit)) {
       const setShips =
-        player === "computer" ? setComputerShips : setPlayerShips;
+        playerAttacked === "computer" ? setComputerShips : setPlayerShips;
 
       setShips((ships) => ({
         ...ships,
@@ -74,18 +79,22 @@ const Game = ({
           isDestroyed: true,
         },
       }));
-
-      checkVictoryStatus();
     }
   };
 
-  const makeComputerMove = () => {
-    // todo
-  };
+  const makeComputerMove = () => {};
 
-  const checkVictoryStatus = () => {
-    // todo
-  };
+  useEffect(() => {
+    if (Object.values(playerShips).every((ship) => ship.isDestroyed)) {
+      setGameStatus("computerWon");
+    }
+  }, [playerShips]);
+
+  useEffect(() => {
+    if (Object.values(computerShips).every((ship) => ship.isDestroyed)) {
+      setGameStatus("playerWon");
+    }
+  }, [computerShips]);
 
   return (
     <>
@@ -98,6 +107,7 @@ const Game = ({
           field={playerField}
           ships={playerShips}
           attackPlayer={attackPlayer}
+          movesBlocked={false}
         />
       </div>
       <div className="flex flex-col gap-3 sm:gap-6">
@@ -109,6 +119,7 @@ const Game = ({
           field={computerField}
           ships={computerShips}
           attackPlayer={attackPlayer}
+          movesBlocked={!isPlayerTurn}
         />
       </div>
     </>

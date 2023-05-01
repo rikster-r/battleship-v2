@@ -3,11 +3,14 @@ type Props = {
   data: Cell;
   player: string;
   attackPlayer: (player: string, position: number) => void;
+  movesBlocked: boolean;
 };
 
-const Cell = ({ cellId, data, player, attackPlayer }: Props) => {
+const Cell = ({ cellId, data, player, attackPlayer, movesBlocked }: Props) => {
+  const allowClick = player === "person" || data.isHit || movesBlocked;
+
   const handleClick = () => {
-    if (player === "person" || data.isHit) return;
+    if (allowClick) return;
 
     attackPlayer("computer", cellId);
   };
@@ -15,7 +18,7 @@ const Cell = ({ cellId, data, player, attackPlayer }: Props) => {
   return (
     <div
       className={`${
-        data.isHit || player === "person"
+        allowClick
           ? ""
           : "hover:cursor-crosshair hover:bg-neutral-300 hover:bg-opacity-30"
       } relative flex aspect-square items-center justify-center border border-neutral-400`}
@@ -25,7 +28,7 @@ const Cell = ({ cellId, data, player, attackPlayer }: Props) => {
         <div
           className={`${
             data.shipId ? "bg-red-500" : "bg-white"
-          }  z-10 h-1/3 w-1/3 rounded-full`}
+          }  z-10 h-1/4 w-1/4 rounded-full`}
         ></div>
       )}
     </div>
