@@ -85,7 +85,9 @@ function App() {
                     className="text-base font-semibold leading-6 text-gray-900"
                     id="modal-title"
                   >
-                    {gameStatus === "playerWon" ? "You won!" : "You lost!"}
+                    {gameStatus === "playerWon"
+                      ? "You've won!"
+                      : "You've lost!"}
                   </h3>
                   <p className="mt-2 text-sm text-gray-500">
                     {gameStatus === "playerWon"

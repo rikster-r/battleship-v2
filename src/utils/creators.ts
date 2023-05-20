@@ -1,3 +1,5 @@
+import { isPositionOutOfBounds } from "./validators";
+
 export const createField = (): Field => {
   return Array(100).fill({
     isHit: false,
@@ -82,7 +84,8 @@ export const createShips = (): Ships => {
 export const createShipPositions = (
   start: number,
   length: number,
-  axis: string
+  axis: string,
+  field?: Field
 ) => {
   let positions: number[] = [];
 
@@ -92,6 +95,13 @@ export const createShipPositions = (
     } else {
       positions.push(start + i * 10);
     }
+  }
+
+  if (
+    field &&
+    positions.some((pos) => isPositionOutOfBounds(pos) || field[pos].isHit)
+  ) {
+    return [];
   }
 
   return positions;

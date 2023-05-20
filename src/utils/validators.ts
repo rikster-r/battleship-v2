@@ -32,3 +32,10 @@ export const isPositionValid = (
   // Otherwise, the position is valid
   return true;
 };
+
+export const isPositionOutOfBounds = (position: number) => {
+  const row = Math.floor(position / 10);
+  const col = position % 10;
+
+  return row < 0 || row > 9 || col < 0 || col > 9;
+};
