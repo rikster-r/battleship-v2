@@ -2,9 +2,10 @@ import { motion } from "framer-motion";
 
 type Props = {
   ship: Ship;
+  removeButtonHovered?: boolean;
 };
 
-const FieldShip = ({ ship }: Props) => {
+const FieldShip = ({ ship, removeButtonHovered }: Props) => {
   if (ship.positions.length === 0) return <></>;
 
   const width = `${ship.length * 10}%`;
@@ -34,7 +35,7 @@ const FieldShip = ({ ship }: Props) => {
         animate={{ scale: 1 }}
       >
         <img
-          src={`/${ship.image}`}
+          src={removeButtonHovered ? `/danger_${ship.image}` : `/${ship.image}`}
           alt={ship.name}
           className={`${ship.length === 1 ? "h-[40%]" : "h-[80%]"} w-[80%]`}
           draggable="false"

@@ -46,6 +46,7 @@ const Setup = ({
   // all cells are droppables and all the ships are draggables
   const [hoveredCellId, setHoveredCellId] = useState<number>();
   const [draggedShipId, setDraggedShipId] = useState<number>();
+  const [shipBeingRemovedId, setShipBeingRemovedId] = useState<number>();
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   useEffect(() => {
@@ -232,7 +233,11 @@ const Setup = ({
                   />
                 ))}
                 {Object.entries(playerShips).map(([id, ship]) => (
-                  <FieldShip key={id} ship={ship} />
+                  <FieldShip
+                    key={id}
+                    ship={ship}
+                    removeButtonHovered={Number(id) === shipBeingRemovedId}
+                  />
                 ))}
               </div>
             </FieldWrapper>
@@ -247,6 +252,7 @@ const Setup = ({
                   ships={playerShips}
                   ship={ship}
                   resetShipPlacement={resetShipPlacement}
+                  setShipBeingRemovedId={setShipBeingRemovedId}
                 />
               ))}
             </AnimatePresence>

@@ -6,9 +6,18 @@ type Props = {
   ships: Ships;
   ship: Ship;
   resetShipPlacement: (id: number) => void;
+  setShipBeingRemovedId: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
 };
 
-const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
+const DraggableShip = ({
+  ships,
+  id,
+  ship,
+  resetShipPlacement,
+  setShipBeingRemovedId,
+}: Props) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -23,10 +32,15 @@ const DraggableShip = ({ ships, id, ship, resetShipPlacement }: Props) => {
     return (
       <motion.button
         key="trash"
-        className="hover: hover: group z-10 flex w-24 flex-col items-center justify-center gap-1 rounded-xl border-neutral-700 py-2 opacity-100 hover:text-red-500 sm:w-32 sm:gap-2 sm:pb-2 sm:pt-3 lg:aspect-square"
+        className="group z-10 flex w-24 flex-col items-center justify-center gap-1 rounded-xl border-neutral-700 py-2 opacity-100 hover:text-red-500 sm:w-32 sm:gap-2 sm:pb-2 sm:pt-3 lg:aspect-square"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        onClick={() => resetShipPlacement(id)}
+        onClick={() => {
+          setShipBeingRemovedId(undefined);
+          resetShipPlacement(id);
+        }}
+        onMouseOver={() => setShipBeingRemovedId(id)}
+        onMouseOut={() => setShipBeingRemovedId(undefined)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
