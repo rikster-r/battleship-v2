@@ -46,7 +46,10 @@ const Game = ({
     );
     const cell = fieldCopy[position];
     // todo: fix issue with target logic
-    if (cell === undefined) return;
+    if (cell === undefined) {
+      setIsPlayerTurn((value) => !value);
+      return;
+    }
 
     cell.isHit = true;
 
