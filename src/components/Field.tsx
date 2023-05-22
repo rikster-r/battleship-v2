@@ -19,7 +19,6 @@ const Field = ({ player, field, ships, attackPlayer, movesBlocked }: Props) => {
             key={id}
             cellId={id}
             data={data}
-            player={player}
             attackPlayer={attackPlayer}
             movesBlocked={movesBlocked}
           />

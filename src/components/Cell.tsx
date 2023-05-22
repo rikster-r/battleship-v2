@@ -1,13 +1,12 @@
 type Props = {
   cellId: number;
   data: Cell;
-  player: string;
   attackPlayer: (player: string, position: number) => void;
   movesBlocked: boolean;
 };
 
-const Cell = ({ cellId, data, player, attackPlayer, movesBlocked }: Props) => {
-  const allowClick = player === "person" || data.isHit || movesBlocked;
+const Cell = ({ cellId, data, attackPlayer, movesBlocked }: Props) => {
+  const allowClick = data.isHit || movesBlocked;
 
   const handleClick = () => {
     if (allowClick) return;
