@@ -1,4 +1,5 @@
 import Field from "./Field";
+import ShipsList from "./ShipsList";
 import { useState, useEffect } from "react";
 import { isPositionOutOfBounds } from "../utils/validators";
 import { createShipPositions } from "../utils/creators";
@@ -227,28 +228,34 @@ const Game = ({
   return (
     <>
       <div className="flex flex-col gap-3 sm:gap-6">
-        <h2 className="text-right font-bold uppercase text-cyan-300 sm:text-2xl">
+        <h2 className="font-bold uppercase text-cyan-300 sm:text-2xl">
           Friendly waters
         </h2>
-        <Field
-          player="person"
-          field={playerField}
-          ships={playerShips}
-          attackPlayer={attackPlayer}
-          movesBlocked={false}
-        />
+        <div className="flex gap-3 2xl:gap-6">
+          <Field
+            player="person"
+            field={playerField}
+            ships={playerShips}
+            attackPlayer={attackPlayer}
+            movesBlocked={true}
+          />
+          <ShipsList ships={playerShips} />
+        </div>
       </div>
       <div className="flex flex-col gap-3 sm:gap-6">
-        <h2 className="text-right font-bold uppercase text-orange-400 sm:text-2xl">
+        <h2 className="font-bold uppercase text-orange-400 sm:text-2xl">
           Enemy waters
         </h2>
-        <Field
-          player="computer"
-          field={computerField}
-          ships={computerShips}
-          attackPlayer={attackPlayer}
-          movesBlocked={!isPlayerTurn}
-        />
+        <div className="flex gap-3 2xl:gap-6">
+          <Field
+            player="computer"
+            field={computerField}
+            ships={computerShips}
+            attackPlayer={attackPlayer}
+            movesBlocked={!isPlayerTurn}
+          />
+          <ShipsList ships={computerShips} />
+        </div>
       </div>
     </>
   );
