@@ -79,11 +79,11 @@ const Game = ({
   useEffect(() => {
     if (computerHits.length === 0) return;
 
-    makeComputerMove();
+    setTimeout(() => makeComputerMove(), 600);
   }, [computerHits]);
 
   useEffect(() => {
-    if (!isPlayerTurn) makeComputerMove();
+    if (!isPlayerTurn) setTimeout(() => makeComputerMove(), 600);
   }, [isPlayerTurn]);
 
   const checkIfShipDestroyed = (
