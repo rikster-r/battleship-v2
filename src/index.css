@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ship-friendly {
+  filter: brightness(0.9) sepia(0.8) hue-rotate(100deg) saturate(1000%);
+}
+
+.ship-enemy {
+  filter: brightness(0.6) sepia(0.5) hue-rotate(340deg) saturate(1000%);
+}
+
+.ship-danger {
+  filter: brightness(0.5) sepia(1) hue-rotate(320deg) saturate(1000%);
+}

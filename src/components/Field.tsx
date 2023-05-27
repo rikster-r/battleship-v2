@@ -28,7 +28,13 @@ const Field = ({ player, field, ships, attackPlayer, movesBlocked }: Props) => {
             player === "person" ||
             (player === "computer" && ship.isDestroyed)
           )
-            return <FieldShip key={id} ship={ship} />;
+            return (
+              <FieldShip
+                key={id}
+                ship={ship}
+                belongsTo={player === "person" ? "player" : "enemy"}
+              />
+            );
         })}
       </div>
     </FieldWrapper>

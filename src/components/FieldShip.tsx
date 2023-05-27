@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 type Props = {
   ship: Ship;
   removeButtonHovered?: boolean;
+  belongsTo?: "player" | "enemy";
 };
 
-const FieldShip = ({ ship, removeButtonHovered }: Props) => {
+const FieldShip = ({ ship, removeButtonHovered, belongsTo }: Props) => {
   if (ship.positions.length === 0) return <></>;
 
   const width = `${ship.length * 10}%`;
@@ -17,6 +18,15 @@ const FieldShip = ({ ship, removeButtonHovered }: Props) => {
   // get x, then multiply by 10 to get percentages
   const top = `${Math.floor(ship.positions[0] / 10) * 10}%`;
   const transform = ship.axis === "x" ? "rotate(0deg)" : "rotate(90deg)";
+
+  let statusClass;
+  if (removeButtonHovered) {
+    statusClass = "ship-danger";
+  } else if (belongsTo === "player") {
+    statusClass = "ship-friendly";
+  } else if (belongsTo === "enemy") {
+    statusClass = "ship-enemy";
+  }
 
   return (
     <div
@@ -35,9 +45,10 @@ const FieldShip = ({ ship, removeButtonHovered }: Props) => {
         animate={{ scale: 1 }}
       >
         <img
-          src={removeButtonHovered ? `/danger_${ship.image}` : `/${ship.image}`}
+          src={`/${ship.image}`}
           alt={ship.name}
-          className={`${ship.length === 1 ? "h-[40%]" : "h-[80%]"} w-[80%]`}
+          className={`${ship.length === 1 ? "h-[40%]" : "h-[80%]"}
+          ${statusClass} w-[80%]`}
           draggable="false"
         />
       </motion.div>

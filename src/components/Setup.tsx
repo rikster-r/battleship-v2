@@ -237,6 +237,7 @@ const Setup = ({
                     key={id}
                     ship={ship}
                     removeButtonHovered={Number(id) === shipBeingRemovedId}
+                    belongsTo="player"
                   />
                 ))}
               </div>
